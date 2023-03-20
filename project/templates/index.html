@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ejemplo de Autenticación con Flask</title>
+    <!-- <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script> -->
+    <link rel="stylesheet" href="../static/css/flexboxgrid.min.css">
+    <link rel="stylesheet" href="../static//css/pico-master/css/pico.min.css">
+    <link rel="stylesheet" href="../static/css/styles_index.css">
+    <script src="https://kit.fontawesome.com/85514e21cb.js" crossorigin="anonymous"></script>
+
+  </head>
+
+  <body>
+
+    <div class="hero">
+      <nav class="container-fluid">
+        <ul>
+          <li><strong>Tidal</strong></li>
+        </ul>
+        <ul>
+          <li>
+            <details role="list" dir="rtl">
+              <summary aria-haspopup="listbox" role="link">Menú</summary>
+              <ul role="listbox">
+                <li>
+                  <a href="{{url_for('main.index')}}">Inicio</a>
+                </li>
+                {% if not current_user.is_authenticated %}
+                <li>
+                  <a href="{{ url_for('auth.login') }}">Login</a>
+                </li>
+                {% endif %}
+        
+                <!-- if current user is auth and has admin role -->
+                {% if current_user.is_authenticated and current_user.has_role('admin')
+                %}
+                <li>
+                  <a href="{{ url_for('productos.dashboard_productos') }}"
+                    >Panel administrativo</a
+                  >
+                </li>
+                {% endif %}
+        
+                <!-- if current user is auth and has user role -->
+                {% if current_user.is_authenticated and current_user.has_role('cliente') %}
+                <li>
+                  <a href="{{ url_for('productos.catalogo_productos') }}">Galeria de productos</a>
+                </li>
+                {% endif %}
+
+                <!-- if theres no current user or user is not admin -->
+                <li>
+                  <a href="{{ url_for('main.formulario') }}">Contacto</a>
+                </li>
+
+                {% if current_user.is_authenticated %}
+                <li>
+                  <a href="{{ url_for('auth.logout') }}">Salir</a>
+                </li>
+                {% endif %}
+              </ul>
+            </details>
+          </li>
+          
+        </ul>
+      </nav>
+      <header class="container">
+        <hgroup>
+          <h1>Tidal</h1>
+          <h2>Tus canciones favoitas en un solo lugar</h2>
+        </hgroup>
+        <p><a href="{{ url_for('auth.register') }}" role="button">Registrate</a></p>
+      </header>
+    </div>
+
+    <main class="container-fluid">
+      <div class="row center-xs">
+        <div class="col-xs-12">
+          <!-- mensajes flask -->
+          {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+            <h4 style="color: red;">{{ message }}</h4>
+            {% endfor %}
+          {% endif %}
+          {% endwith %}
+        </div>
+        <div class="col-xs-12">
+          <div class="box">
+            <section>
+              <div class="row center-xs">
+                <div class="col-xs-6" id="def">
+                  <h2>¿Qué es Tidal?</h2>
+                  <p>
+                    Tidal es una aplicación web que te permite comprar y vender tus canciones favoritas.
+                  </p>
+                </div>
+              </div>
+            </section>
+            <hr>
+            <section style="padding-top: 3em;">
+              <div class="row center-xs">
+                <div class="col-xs-3" id="buy">
+                  <div class="box">
+                    <div style="padding-bottom: 20px;">
+                      <i class="fa-solid fa-music fa-8x"></i>
+                    </div>
+                    <h3>Compra</h3>
+                  </div>
+                </div>
+                <div class="col-xs-3" id="down">
+                  <div class="box">
+                    <div style="padding-bottom: 20px;">
+                      <i class="fa-solid fa-download fa-8x"></i>
+                    </div>
+                    <h3>Descarga</h3>
+                  </div>
+                </div>
+                <div class="col-xs-3" id="hear">
+                  <div class="box">
+                    <div style="padding-bottom: 20px;">
+                      <i class="fa-solid fa-headphones fa-8x"></i>
+                    </div>
+                    <h3>Escucha</h3>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <hr>
+            <section>
+              <div class="row center-xs">
+                <div class="col-xs-5">
+                  <div class="box">
+                    <article>
+                      <h2>¿Cómo funciona?</h2>
+                      <p>
+                        Tidal es una aplicación web que te permite comprar tus canciones favoritas.
+                      </p>
+                    </article>
+                  </div>
+                </div>
+                <div class="col-xs-5">
+                  <div class="box">
+                    <article>
+                      <h2>¿Mi compra es para siempre?</h2>
+                      <p>
+                        Si, tu compra es para siempre, puedes descargarla cuantas veces quieras.
+                      </p>
+                    </article>
+                  </div>
+                </div>
+              </div>
+            </section>
+            {% if productos.count() and not current_user.is_authenticated or current_user.has_role('cliente')%}
+            <hr>
+            <!-- show section if productos is not empty -->
+            <section style="padding-top: 20px;">
+              <h2 style="text-align: center;">
+                <strong>Productos destacados</strong>
+              </h2>
+              <div class="row center-xs">
+                {% for producto in productos %}
+                <a href="{{ url_for('productos.catalogo_productos') }}">
+                  <div class="col-xs">
+                    <div class="box">
+                      <div class="contenedor-imagen">
+                        <img src="../static/media/{{ producto.imagen }}" alt="imagen" width="300" height="300">
+                        <div class="texto">Explora nuestro catálogo</div>
+                      </div>
+                    </div>
+                  </div>
+                </a>
+                {% endfor %}
+              </div>
+            </section>
+            {% endif %}
+
+            <hr>
+            <section>
+              <div class="row center-xs">
+                <div class="col-xs-5">
+                  <div class="box">
+                    <div style="padding-top: 50px;">
+                      <h2>¿Qué estas esperando?</h2>
+                      <p>
+                        Registrate y comienza a comprar tus canciones favoritas.
+                      </p>
+                      <a href="{{ url_for('auth.register') }}" role="button">Registrate</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer
+      class="container-fluid">
+      <div class="row center-xs">
+        <div class="col-xs-6">
+          <p>
+            Cristian Ruiz &copy; 2023
+            {% if current_user.is_authenticated %}
+             | <a href="{{ url_for('auth.logout') }}">Salir</a>
+            {% endif %}
+          </p>
+        </div>
+      </div>
+    </footer>
+  </body>
+
+  <style>
+
+    html {
+      position: relative;
+      min-height: 100%;
+    }
+
+    body {
+      margin-bottom: 60px;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 15px;
+    }
+
+    footer p {
+      padding-top: 20px;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    #buy:hover {
+      color: #fff;
+    }
+
+    #down:hover {
+      color: #fff;
+    }
+  
+    #hear:hover {
+      color: #fff;
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .contenedor-imagen {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .texto {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+      text-align: center;
+    }
+    
+    .contenedor-imagen:hover .texto {
+      opacity: 1;
+    }
+    
+    .contenedor-imagen img {
+      display: block;
+      transition: filter 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    }
+    
+    .contenedor-imagen:hover img {
+      filter: brightness(20%);
+    }
+
+  </style>
+
+  <script>
+    //animations when scrolling
+
+    const sections = document.querySelectorAll("section");
+
+    const options = {
+      rootMargin: "0px 0px -15px 0px",
+    };
+
+    const observer = new IntersectionObserver(function (entries, observer) {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) {
+          return;
+        } else {
+          entry.target.style.animation = `fadeIn 1s ease-in-out forwards`;
+        }
+      });
+    }, options);
+
+    sections.forEach((section) => {
+      observer.observe(section);
+    });
+
+
+
+  </script>
+
+</html>
+
+

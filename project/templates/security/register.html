@@ -1,0 +1,69 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="row center-xs">
+  <div class="col-xs-6">
+    <div class="box">
+      <article>
+        {% with messages = get_flashed_messages() %} {% if messages %} {% for
+        message in messages %}
+        <h6 style="color: red;">{{ message }}</h6>
+        {% endfor %} {% endif %} {% endwith %}
+        <form action="{{ url_for('auth.register') }}" method="post">
+          <div>
+            <label for="name" class="form-label" style="text-align: left"
+              >Nombre
+              <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder="Nombre"
+                required
+              />
+            </label>
+          </div>
+          <div>
+            <label for="email" class="form-label" style="text-align: left"
+              >Email
+              <input
+                type="text"
+                id="email"
+                name="email"
+                placeholder="Email"
+                required
+              />
+            </label>
+          </div>
+          <div>
+            <label for="password" class="form-label" style="text-align: left;"
+              >Contraseña
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Contraseña"
+                required
+              />
+            </label>
+          </div>
+          <div>
+            <p>
+              ¿Ya tienes una cuenta?
+              <a href="{{ url_for('auth.login') }}">Inicia sesión</a>
+            </p>
+          </div>
+          <div>
+            <button type="submit" class="btn btn-primary">Registrarse</button>
+            <!-- boton para volver al inicio-->
+            <a href="/" class="btn btn-secondary">Volver a Inicio</a>
+          </div>
+        </form>
+      </article>
+    </div>
+  </div>
+</div>
+
+<!-- formulario de login centrado vertical y horizontalmente -->
+
+{% endblock %}
+
+

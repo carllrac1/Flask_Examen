@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- formulario de contacto -->
+<div class="row center-xs middle-xs">
+  <div class="col-xs-6">
+    <div class="box">
+      <article>
+        <h1>Formulario de contacto</h1>
+        <form method="post">
+          <div>
+            <label for="name" class="form-label" style="text-align: left"
+              >Nombre
+              <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder="Nombre"
+                required
+              />
+            </label>
+          </div>
+          <div>
+            <label for="email" class="form-label" style="text-align: left"
+              >Email
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Email"
+                required
+              />
+            </label>
+          </div>
+          <div>
+            <label for="subject" class="form-label" style="text-align: left"
+              >Asunto
+              <input
+                type="text"
+                id="subject"
+                name="subject"
+                placeholder="Asunto"
+                required
+              />
+            </label>
+          </div>
+          <div>
+            <label for="message" class="form-label" style="text-align: left"
+              >Mensaje
+              <textarea
+                id="message"
+                name="message"
+                placeholder="Mensaje"
+                required
+              ></textarea>
+            </label>
+          </div>
+          <div>
+            <button type="submit" class="btn btn-primary">Enviar</button>
+            <!-- boton para volver al inicio-->
+            <a href="/" class="btn btn-secondary">Volver a Inicio</a>
+          </div>
+        </form>
+      </article>
+    </div>
+  </div>
+  <div class="col-xs-6">
+    <div class="box">
+        <p>
+          <b>Dirección</b>: <span>Colina del Naranjo #227A</span>
+        </p>
+        <p>
+          <b>Teléfono</b>: <span>55 1234 5678</span>
+        </p>
+        <p>
+          <b>Email</b>: <span>
+            <a href="mailto:cristianlopez@gmail.com">
+              cristianlopez@gmail.com
+            </a>
+          </span>
+        </p>
+
+        <p>
+          <b>Horario</b>: <span>Lunes a Viernes de 9:00 a 18:00</span>
+        </p>
+
+        <p>
+          <b>Facebook</b>: <span>
+            <a href="https://www.facebook.com/cristian.lopez.581">
+              Cristian Ruiz
+            </a>
+          </span>
+        </p>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

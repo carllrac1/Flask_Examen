@@ -1,0 +1,135 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="row center-xs pb-3">
+
+  <div class="col-xs-12">
+    <div class="box">
+      <h2>
+        Explora nuestro catálogo de canciones
+      </h2>
+    </div>
+  </div>
+
+  {% for producto in productos %}
+
+  <div class="col-xs-3">
+    <div class="box">
+      <a
+        href="#"
+        data-id="{{producto.id}}"
+        data-nombre="{{producto.nombre}}"
+        data-artista="{{producto.artista}}"
+        data-annio="{{producto.annio}}"
+        data-precio="{{producto.precio}}"
+        data-imagen="{{url_for('static', filename='media/' + producto.imagen)}}"
+        data-stock="{{producto.cantidad}}"
+        class="btn-modal"
+      >
+        <div class="contenedor-imagen">
+          <img
+            src="{{url_for('static', filename='media/' + producto.imagen)}}"
+          />
+          <div class="texto">
+            <h2>{{ producto.nombre }}</h2>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<dialog id="modal-example">
+  <article style="width: 100%">
+    <header id="titulo-album-m">
+      <a href="#" class="btn-cerrar close" aria-label="Close"> </a>
+      <hgroup>
+        <h2 id="p-nombre"></h2>
+        <h3 id="p-artista"></h3>
+      </hgroup>
+    </header>
+    <div class="row center-xs middle-xs">
+      <div class="col-xs-6">
+        <img src="#" height="200px" width="200px" id="p-imagen" />
+      </div>
+      <div class="col-xs-6">
+        <div class="row">
+          <div class="col-xs-12 pb-2">
+            <b>Año: </b> <span id="p-annio"></span>
+          </div>
+          <div class="col-xs-12 pb-2">
+            <b>Precio: </b> <span id="p-precio"></span>
+          </div>
+          <div class="col-xs-12">
+            <b>Cantidad: </b> <span id="p-cantidad"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <a href="#confirm" role="button">Comprar</a>
+    </footer>
+  </article>
+</dialog>
+
+<style>
+  .contenedor-imagen {
+    position: relative;
+    display: inline-block;
+  }
+
+  .texto {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    text-align: center;
+  }
+
+  .contenedor-imagen:hover .texto {
+    opacity: 1;
+  }
+
+  .contenedor-imagen img {
+    display: block;
+    transition: filter 0.5s ease-in-out, opacity 0.5s ease-in-out;
+  }
+
+  .contenedor-imagen:hover img {
+    filter: brightness(20%);
+  }
+</style>
+
+<script>
+  const modal = document.getElementById("modal-example");
+  const btnModal = document.querySelectorAll(".btn-modal");
+
+  btnModal.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      modal.showModal();
+      document.getElementById("p-nombre").innerHTML = btn.dataset.nombre;
+      document.getElementById("p-artista").innerHTML = btn.dataset.artista;
+      document.getElementById("p-annio").innerHTML = btn.dataset.annio;
+      document.getElementById("p-precio").innerHTML = btn.dataset.precio;
+      document.getElementById("p-imagen").src = btn.dataset.imagen;
+      document.getElementById("p-cantidad").innerHTML = btn.dataset.stock;
+    });
+  });
+
+  const btnCerrar = document.querySelector(".btn-cerrar");
+  btnCerrar.addEventListener("click", (e) => {
+    e.preventDefault();
+    modal.close();
+  });
+
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.close();
+    }
+  });
+</script>
+
+{% endblock %}

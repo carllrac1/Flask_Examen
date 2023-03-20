@@ -1,0 +1,262 @@
+{% extends "base.html" %} 
+{% block content %}
+
+<div class="row center-xs">
+
+    <!-- mostrar mensajes flask -->
+   
+
+    <div class="col-xs-9">
+        <div class="box">
+            {% with messages = get_flashed_messages() %} {% if messages %}
+            <div class="col-12 pt-5">
+                    {% for message in messages %}
+                    <ins>{{ message }}</ins>
+                    {% endfor %}
+            </div>
+            {% endif %} {% endwith %}
+            <article>
+                <header style="text-align: left;">
+                    <div class="row middle-xs">
+                        <div class="col-xs-6">
+                            <div class="row middle-xs">
+                                <h4>Productos</h4>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="row end-xs">
+                                <button type="button" class="primary" style="width: 25%;" id="btn-nuevo">
+                                    Nuevo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nombre</th>
+                            <th>Artista</th>
+                            <th>Año de lanzamiento</th>
+                            <th>Precio</th>
+                            <th>Imagen</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for producto in productos %}
+                        <tr>
+                            <td>{{ producto.id }}</td>
+                            <td>{{ producto.nombre }}</td>
+                            <td>{{ producto.artista }}</td>
+                            <td>{{ producto.annio }}</td>
+                            <td>{{ producto.precio }}</td>
+                            <td>
+                                <img src="{{ url_for('static', filename='media/' + producto.imagen) }}"
+                                    alt="{{ producto.imagen }}" width="50" height="50">
+                            </td>
+                            <td>
+                                <div class="row">
+                                    <div style="col-xs">
+                                        <button type="button" class="btn-editar"
+                                        data-id="{{producto.id}}" 
+                                        data-nombre="{{producto.nombre}}"
+                                        data-artista="{{producto.artista}}"
+                                        data-annio="{{producto.annio}}"
+                                        data-precio="{{producto.precio}}"
+                                        data-cantidad="{{producto.cantidad}}"
+                                        data-imagen="{{producto.imagen}}">
+                                            <i class="fas fa-pencil btn-editar"></i>
+                                        </button>
+                                    </div>
+                                    <div class="col-xs">
+                                        <form action="{{ url_for('productos.eliminar_producto', id=producto.id) }}" method="post" class="d-inline">
+                                            <button type="submit" class="contrast outline">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </article>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<dialog id="modal-example">
+  <article style="width: 50%;">
+    <a href="#"
+      aria-label="Close"
+      class="close"
+      data-target="modal-example"
+      onClick="cerrarModal()">
+    </a>
+    <h3 id="exampleModalLabel">Nuevo producto</h3>
+    <div class="row"></div>
+    <form id="formP" action="{{ url_for('productos.crear_producto') }}" method="post" enctype="multipart/form-data">
+
+
+
+        <div>
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" name="nombre"
+                placeholder="Nombre del producto" required>
+        </div>
+        <div>
+            <label for="artista">Artista</label>
+            <input type="text" id="artista" name="artista"
+                placeholder="Nombre del producto" required>
+        </div>
+        <div>
+            <label for="annio">Año de lanzamiento</label>
+            <input type="number" id="annio" name="annio"
+                placeholder="Año de lanzamiento del producto" required>
+        </div>
+        <div >
+            <label for="precio">Precio</label>
+            <input type="number" id="precio" name="precio"
+                placeholder="Precio del producto" required>
+        </div>
+        <div >
+            <label for="cantidad">Cantidad</label>
+            <input type="number" id="cantidad" name="cantidad"
+                placeholder="Cantidad del producto" required>
+        </div>
+
+        <div>
+            <label for="imagen">Imagen</label>
+            <input type="file" id="imagen" name="imagen"
+            placeholder="Imagen del producto" required>
+
+            <!-- center image vista-previa in div-img -->
+            <div class="row center-xs pb-3">
+                <div style="display: none;" id="div-img">
+                    <img id="vista-previa">
+                </div>
+            </div>
+        </div>
+        <div>
+            <button type="submit" class="primary">Crear</button>
+        </div>
+    </form>
+  </article>
+</dialog>
+
+
+
+<script>
+
+    function abrirModal() {
+
+       //animacion fade
+        document.getElementById('modal-example').animate([
+            { opacity: '0' },
+            { opacity: '1' }
+        ], {
+            duration: 250,
+            fill: 'forwards'
+        });
+
+        document.getElementById('modal-example').setAttribute('open', 'open');
+
+    }
+
+    //cerrar modal
+    function cerrarModal() {
+        //animacion fade out
+        document.getElementById('modal-example').animate([
+            { opacity: '1' },
+            { opacity: '0' }
+        ], {
+            duration: 250,
+            fill: 'forwards'
+        });
+
+        setTimeout(() => {
+            document.getElementById('modal-example').removeAttribute('open');
+        }, 250);
+    }
+
+    //cerrar modal al dar click fuera del modal
+    document.getElementById('modal-example').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('modal-example')) {
+            cerrarModal();
+        }
+    });
+
+    const btnEditar = document.querySelectorAll('.btn-editar');
+    btnEditar.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const nombre = btn.getAttribute('data-nombre');
+            const artista = btn.getAttribute('data-artista');
+            const annio = btn.getAttribute('data-annio');
+            const precio = btn.getAttribute('data-precio');
+            const cantidad = btn.getAttribute('data-cantidad');
+            const imagen = btn.getAttribute('data-imagen');
+            
+        
+            document.querySelector('#nombre').value = nombre;
+            document.querySelector('#artista').value = artista;
+            document.querySelector('#annio').value = annio;
+            document.querySelector('#precio').value = precio;
+            document.querySelector('#cantidad').value = cantidad;
+        
+        
+            //mostrar vista previa de la imagen arriba del input imagen en tamaño 50x50
+            document.querySelector('#vista-previa').src = '/static/media/' + imagen;
+            document.querySelector('#vista-previa').width = 400;
+            document.querySelector('#div-img').style.display = 'block';
+        
+        
+            document.querySelector('#imagen').required = false;
+        
+            document.querySelector('#exampleModalLabel').innerHTML = 'Editar producto';
+
+            document.querySelector('#formP').action = '/productos/editar/' + btn.getAttribute('data-id');
+
+            document.querySelector('#formP button').innerHTML = 'Editar';
+
+            abrirModal();
+
+        });
+    });
+
+    const btnNuevo = document.querySelector('#btn-nuevo');
+    btnNuevo.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.querySelector('#nombre').value = '';
+        document.querySelector('#artista').value = '';
+        document.querySelector('#annio').value = '';
+        document.querySelector('#precio').value = '';
+        document.querySelector('#cantidad').value = '';
+        
+
+        document.querySelector('#vista-previa').src = '';
+        document.querySelector('#vista-previa').width = 0;
+        document.querySelector('#div-img').style.display = 'none';
+
+        document.querySelector('#imagen').required = true;
+
+        document.querySelector('#exampleModalLabel').innerHTML = 'Nuevo producto';
+
+        document.querySelector('form').action = '/productos/crear';
+
+        document.querySelector('#formP button').innerHTML = 'Crear';
+
+        //set open de modal-example
+        abrirModal();
+
+    });
+
+</script>
+
+
+{% endblock %} 
